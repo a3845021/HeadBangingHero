@@ -39,7 +39,7 @@ void CLoadScene::InitUI()
 	bg->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(bg);
 
-	//2秒后加载资源
+	//2绉掑悗鍔犺浇璧勬簮
 	this->scheduleOnce(schedule_selector(CLoadScene::OnEnterMenuScene), 2.0f);
 }
 
@@ -52,10 +52,10 @@ void CLoadScene::LoadResources()
 
 void CLoadScene::OnEnterMenuScene(float dt)
 {
-	//加载资源
+	//鍔犺浇璧勬簮
 	LoadResources();
 	
-	//菜单界面
+	//鑿滃崟鐣岄潰
 	auto menuScene = CMenuScene::CreateScene();
 	REPLACE_SCENE(menuScene);
 }
