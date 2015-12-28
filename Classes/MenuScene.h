@@ -22,10 +22,18 @@ public:
 	CREATE_FUNC(CMenuScene);
 
 private:
-	cocos2d::Size m_visibleSize;
+	enum 
+	{
+		FIRE_INDEX_MAX = 11,			//火焰图片索引最大值
+	};
+	
 
-	float m_iBGMPlayTime;			//当前背景音乐播放时间
+	const float FIRE_ANIM_TIME = 0.1f;	//每隔0.1秒切换一次火焰
 
-	const float BGM1_TIME = 28;		//第一首背景音乐持续时间
+	float m_fFireAnimTime;				//火焰动画时间
+
+	int m_iFireAnimIndex;				//火焰Frame索引
+
+	cocos2d::Sprite* m_pFireSprite;		//火焰图片
 };
 

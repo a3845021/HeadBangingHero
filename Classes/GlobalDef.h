@@ -2,11 +2,19 @@
 #define __GLOBAL_DEFINE_H_
 
 // ---- 全局头文件 ----
+#include <string>
+#include <set>
+#include <list>
 
-
-// ---- cocos 常用函数宏定义 ----
 #define CC_RETURN_FALSE_IF(exp) if(exp){return false;}
 
+#define FLOAT_EQ(a, b) fabs(a - b) < 1e-6
+
+#define FLOAT_GT(a, b) a - b > 1e-6
+
+#define FLOAT_GE(a, b) (FLOAT_EQ(a, b) || FLOAT_GT(a, b))
+
+// ---- cocos 常用函数宏定义 ----
 #define DIRECTOR_INSTANCE Director::getInstance
 
 #define GET_VISIBLESIZE Director::getInstance()->getVisibleSize
@@ -17,9 +25,17 @@
 
 #define RESUME_SCENE Director::getInstance()->resume
 
+#define ADD_ANIM(anim, name) AnimationCache::getInstance()->addAnimation(anim, name)
+
+#define GET_ANIM(name) AnimationCache::getInstance()->getAnimation(name)
+
 #define GET_SPRITEFRAME(name) SpriteFrameCache::getInstance()->getSpriteFrameByName(name)
 
 #define ADD_SPRITEFRAME(name) SpriteFrameCache::getInstance()->addSpriteFramesWithFile(name)
+
+#define CREATE_SPRITEWITHNAME(name) Sprite::createWithSpriteFrameName(name)
+
+#define CREATE_SPRITE(name) Sprite::create(name)
 
 #define AUDIO_INSTANCE CocosDenshion::SimpleAudioEngine::getInstance
 
@@ -34,8 +50,6 @@
 #define PRELOAD_EFFECT(name) CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect(name)
 
 #define PLAY_EFFECT(name) CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(name)
-
-#define CREATE_SPRITE(name) Sprite::createWithSpriteFrameName(name)
 
 #define GET_CONTENTSIZE(sprite) sprite->getContentSize()
 
@@ -56,7 +70,6 @@
 #define BGM_MENU1 "Sounds/menubgm.mp3"
 
 #define BGM_MENU2 "Sounds/menubgm2.mp3"
-
 
 
 

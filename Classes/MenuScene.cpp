@@ -5,7 +5,7 @@
 USING_NS_CC;
 USING_NS_CC_EXT;
 
-CMenuScene::CMenuScene() : m_iBGMPlayTime(0)
+CMenuScene::CMenuScene() : m_fFireAnimTime(0), m_iFireAnimIndex(1)
 {
 }
 
@@ -26,9 +26,9 @@ bool CMenuScene::init()
 {
 	CC_RETURN_FALSE_IF(!Layer::init());
 
-	m_visibleSize = GET_VISIBLESIZE();
-
 	InitUI();
+
+	InitMenu();
 
 	return true;
 }
@@ -36,35 +36,59 @@ bool CMenuScene::init()
 
 void CMenuScene::InitUI()
 {
-	Scale9Sprite* bg = Scale9Sprite::create("Images/menubg1.png");
-	bg->setPreferredSize(m_visibleSize);
-	bg->setPosition(m_visibleSize.width / 2, m_visibleSize.height / 2);
-	this->addChild(bg);
+	Size visibleSize = GET_VISIBLESIZE();
 
-	auto logo = Sprite::create("Images/logo.png");
-	Size logoSize = GET_CONTENTSIZE(logo);
-	logo->setPosition(logoSize.width * 0.5f, m_visibleSize.height - logoSize.height * 2 / 3);
-	this->addChild(logo);
+	Scale9Sprite* pBg = Scale9Sprite::create("Images/menubg1.png");
+	pBg->setPreferredSize(visibleSize);
+	pBg->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	this->addChild(pBg);
 
-	auto hand = Sprite::create("Images/hand.png");
-	Size handSize = GET_CONTENTSIZE(hand);
-	hand->setPosition(m_visibleSize.width / 4, handSize.height / 2);
-	this->addChild(hand);
+	auto pLogo = Sprite::create("Images/logo.png");
+	Size logoSize = GET_CONTENTSIZE(pLogo);
+	pLogo->setPosition(logoSize.width * 0.5f, visibleSize.height - logoSize.height * 0.6f);
+	this->addChild(pLogo);
+
+	auto pHand = Sprite::create("Images/hand.png");
+	Size handSize = GET_CONTENTSIZE(pHand);
+	pHand->setPosition(visibleSize.width / 4, handSize.height / 2);
+	this->addChild(pHand);
+
+	m_pFireSprite = Sprite::createWithSpriteFrameName("fire1.png");
+	Size fireSize = GET_CONTENTSIZE(m_pFireSprite);
+	m_pFireSprite->setScale(visibleSize.width * 1.1f / fireSize.width);
+	m_pFireSprite->setPosition(visibleSize.width / 2, fireSize.height / 2);
+	this->addChild(m_pFireSprite);
+	
+	//火焰动画更新
+	this->scheduleUpdate();
 
 	//背景音乐
-	PLAY_BGMUSIC(BGM_MENU1);
-	this->scheduleUpdate();
+	LOOP_PLAY_BGMUSIC(BGM_MENU1);
 }
 
 
-//第一首背景音乐播放完时第二首重复播放
+//初始化菜单
+void CMenuScene::InitMenu()
+{
+
+}
+
+
+
 void CMenuScene::update(float dt)
 {
-	m_iBGMPlayTime += dt;
-	if (m_iBGMPlayTime >= BGM1_TIME)
+	m_fFireAnimTime += dt;
+	if (FLOAT_GE(m_fFireAnimTime, 0.1f))
 	{
-		STOP_BGMUSIC();
-		LOOP_PLAY_BGMUSIC(BGM_MENU2);
-		this->unscheduleUpdate();
+		m_fFireAnimTime = 0;
+
+		//设置索引
+		if (++m_iFireAnimIndex > FIRE_INDEX_MAX)
+		{
+			m_iFireAnimIndex = 1;
+		}
+
+		//切换下一帧火焰图片
+		m_pFireSprite->setSpriteFrame(GET_SPRITEFRAME(StringUtils::format("fire%d.png", m_iFireAnimIndex)));
 	}
 }

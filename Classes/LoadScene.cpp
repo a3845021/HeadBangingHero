@@ -1,6 +1,6 @@
 #include "LoadScene.h"
-#include "GlobalDef.h"
 #include "MenuScene.h"
+#include "GlobalDef.h"
 
 USING_NS_CC;
 
@@ -45,8 +45,42 @@ void CLoadScene::InitUI()
 
 void CLoadScene::LoadResources()
 {
+	//加载Plist图集
+	const char* arrPlistPath[1] = 
+	{
+		"Plist/fire.plist",
+	};
+	for (int i = 0; i < 1; ++i)
+	{
+		ADD_SPRITEFRAME(arrPlistPath[i]);
+	}
+
+	//预加载背景音乐、音效
 	PRELOAD_BGMUSIC(BGM_MENU1);
 	PRELOAD_BGMUSIC(BGM_MENU2);
+
+	//创建动画
+	TSET_STRING setSpriteFrame;
+	for (int i = 1; i <= 11;++i)
+	{
+		setSpriteFrame.insert(StringUtils::format("fire%d.png", i));
+	}
+	PrecreateAnim(setSpriteFrame, "FireAnim", 0.1f);
+}
+
+
+//预创建动画
+void CLoadScene::PrecreateAnim(const TSET_STRING& setSpriteFrame, const std::string& strAnimName, float fDelay)
+{
+	auto anim = Animation::create();
+	anim->setDelayPerUnit(fDelay);
+	TSET_STRINGITER pIter = setSpriteFrame.begin();
+	for (; pIter != setSpriteFrame.end(); ++pIter)
+	{
+		anim->addSpriteFrame(GET_SPRITEFRAME(*pIter));
+	}
+
+	ADD_ANIM(anim, strAnimName);
 }
 
 
@@ -54,7 +88,7 @@ void CLoadScene::OnEnterMenuScene(float dt)
 {
 	//加载资源
 	LoadResources();
-	
+
 	//菜单界面
 	auto menuScene = CMenuScene::CreateScene();
 	REPLACE_SCENE(menuScene);
