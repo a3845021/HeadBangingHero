@@ -39,13 +39,13 @@ void CLoadScene::InitUI()
 	bg->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(bg);
 
-	//2Ãëºó¼ÓÔØ×ÊÔ´
+	//2ç§’ååŠ è½½èµ„æº
 	this->scheduleOnce(schedule_selector(CLoadScene::OnEnterMenuScene), 2.0f);
 }
 
 void CLoadScene::LoadResources()
 {
-	//¼ÓÔØPlistÍ¼¼¯
+	//åŠ è½½Plistå›¾é›†
 	const char* arrPlistPath[1] = 
 	{
 		"Plist/fire.plist",
@@ -55,11 +55,11 @@ void CLoadScene::LoadResources()
 		ADD_SPRITEFRAME(arrPlistPath[i]);
 	}
 
-	//Ô¤¼ÓÔØ±³¾°ÒôÀÖ¡¢ÒôĞ§
+	//é¢„åŠ è½½èƒŒæ™¯éŸ³ä¹ã€éŸ³æ•ˆ
 	PRELOAD_BGMUSIC(BGM_MENU1);
 	PRELOAD_BGMUSIC(BGM_MENU2);
 
-	//´´½¨¶¯»­
+	//åˆ›å»ºåŠ¨ç”»
 	TSET_STRING setSpriteFrame;
 	for (int i = 1; i <= 11;++i)
 	{
@@ -69,7 +69,7 @@ void CLoadScene::LoadResources()
 }
 
 
-//Ô¤´´½¨¶¯»­
+//é¢„åˆ›å»ºåŠ¨ç”»
 void CLoadScene::PrecreateAnim(const TSET_STRING& setSpriteFrame, const std::string& strAnimName, float fDelay)
 {
 	auto anim = Animation::create();
@@ -86,10 +86,10 @@ void CLoadScene::PrecreateAnim(const TSET_STRING& setSpriteFrame, const std::str
 
 void CLoadScene::OnEnterMenuScene(float dt)
 {
-	//¼ÓÔØ×ÊÔ´
+	//åŠ è½½èµ„æº
 	LoadResources();
 
-	//²Ëµ¥½çÃæ
+	//èœå•ç•Œé¢
 	auto menuScene = CMenuScene::CreateScene();
 	REPLACE_SCENE(menuScene);
 }
