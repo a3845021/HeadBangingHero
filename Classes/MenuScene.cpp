@@ -24,7 +24,7 @@ Scene* CMenuScene::CreateScene()
 
 bool CMenuScene::init()
 {
-	CC_RETURN_FALSE_IF(!Layer::init());
+	CC_RETURN_FALSE_IF(!LayerColor::initWithColor(Color4B::WHITE));
 
 	InitUI();
 
@@ -38,27 +38,36 @@ void CMenuScene::InitUI()
 {
 	Size visibleSize = GET_VISIBLESIZE();
 
+	//背景
+	/*
+	auto pBg = Sprite::create("Images/menubg1.png");
+	Size BgSize = GET_CONTENTSIZE(pBg);
+	pBg->setScale(visibleSize.width / BgSize.width, visibleSize.height / BgSize.height);*/
+
 	Scale9Sprite* pBg = Scale9Sprite::create("Images/menubg1.png");
 	pBg->setPreferredSize(visibleSize);
 	pBg->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(pBg);
 
+	//Logo
 	auto pLogo = Sprite::create("Images/logo.png");
 	Size logoSize = GET_CONTENTSIZE(pLogo);
 	pLogo->setPosition(logoSize.width * 0.5f, visibleSize.height - logoSize.height * 0.6f);
 	this->addChild(pLogo);
 
+	//手
 	auto pHand = Sprite::create("Images/hand.png");
 	Size handSize = GET_CONTENTSIZE(pHand);
 	pHand->setPosition(visibleSize.width / 4, handSize.height / 2);
 	this->addChild(pHand);
 
+	//火焰
 	m_pFireSprite = Sprite::createWithSpriteFrameName("fire1.png");
 	Size fireSize = GET_CONTENTSIZE(m_pFireSprite);
 	m_pFireSprite->setScale(visibleSize.width * 1.1f / fireSize.width);
 	m_pFireSprite->setPosition(visibleSize.width / 2, fireSize.height / 2);
 	this->addChild(m_pFireSprite);
-	
+
 	//火焰动画更新
 	this->scheduleUpdate();
 
@@ -70,9 +79,43 @@ void CMenuScene::InitUI()
 //初始化菜单
 void CMenuScene::InitMenu()
 {
+	Size visibleSize = GET_VISIBLESIZE();
 
+	//开始按钮
+	auto playBtn = MenuItemSprite::create(
+		Sprite::create("Play/play.png"),
+		Sprite::create("Play/play.png"),
+		CC_CALLBACK_1(CMenuScene::OnMenuClick, this)
+		);
+	Size playBtnSize = GET_CONTENTSIZE(playBtn);
+	playBtn->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+
+	auto menu = Menu::create(playBtn, NULL);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu);
+
+	//选择图片
+	//auto pSelect = Sprite::create("Images/select.png");
+	//Size selectSize = GET_CONTENTSIZE(pSelect);
+	//pSelect->setPosition(visibleSize.width / 2 - playBtnSize.width / 2 - selectSize.width / 2, visibleSize.height / 2);
+	//this->addChild(pSelect);
+	////动作
+	//pSelect->runAction(
+	//	RepeatForever::create(
+	//	Sequence::createWithTwoActions(
+	//		MoveBy::create(0.2f, Vec2(-30, 0)),
+	//		MoveBy::create(0.2f, Vec2(30, 0))
+	//	)
+	//	)
+	//);
 }
 
+
+//菜单点击
+void CMenuScene::OnMenuClick(Ref* pSender)
+{
+	log("playBtn OnMenuClick");
+}
 
 
 void CMenuScene::update(float dt)

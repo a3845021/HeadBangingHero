@@ -1,7 +1,7 @@
 #pragma once
 #include "cocos2d.h"
 
-class CMenuScene : public cocos2d::Layer
+class CMenuScene : public cocos2d::LayerColor
 {
 public:
 	CMenuScene();
@@ -19,6 +19,9 @@ public:
 
 	void update(float dt);
 
+	//菜单点击
+	void OnMenuClick(cocos2d::Ref* pSender);
+
 	CREATE_FUNC(CMenuScene);
 
 private:
@@ -28,7 +31,7 @@ private:
 	};
 	
 
-	const float FIRE_ANIM_TIME = 0.1f;	//每隔0.1秒切换一次火焰
+	const float FIRE_ANIM_TIME = 0.1f;	//每隔0.15秒切换一次火焰
 
 	float m_fFireAnimTime;				//火焰动画时间
 
