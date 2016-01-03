@@ -46,26 +46,29 @@ void CLoadScene::InitUI()
 void CLoadScene::LoadResources()
 {
 	//加载Plist图集
-	const char* arrPlistPath[1] = 
+	const char* arrPlistPath[5] = 
 	{
-		"Plist/fire.plist",
+		"Plist/fireAnim.plist",
+		"Plist/female.plist",
+		"Plist/male.plist",
+		"Plist/num.plist",
+		"Plist/selectAnim.plist"
 	};
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 5; ++i)
 	{
 		ADD_SPRITEFRAME(arrPlistPath[i]);
 	}
 
 	//预加载背景音乐、音效
-	PRELOAD_BGMUSIC(BGM_MENU1);
-	PRELOAD_BGMUSIC(BGM_MENU2);
+	PRELOAD_BGMUSIC(BGM_MENU);
 
 	//创建动画
 	TSET_STRING setSpriteFrame;
-	for (int i = 1; i <= 11;++i)
+	for (int i = 1; i <= 10; ++i)
 	{
-		setSpriteFrame.insert(StringUtils::format("fire%d.png", i));
+		setSpriteFrame.insert(StringUtils::format("select_%d.png", i));
 	}
-	PrecreateAnim(setSpriteFrame, "FireAnim", 0.1f);
+	PrecreateAnim(setSpriteFrame, "SelectAnim", 0.03f);
 }
 
 

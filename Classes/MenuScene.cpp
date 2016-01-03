@@ -1,6 +1,7 @@
 #include "MenuScene.h"
 #include "GlobalDef.h"
 #include "cocos-ext.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -62,7 +63,7 @@ void CMenuScene::InitUI()
 	this->addChild(pHand);
 
 	//»ðÑæ
-	m_pFireSprite = Sprite::createWithSpriteFrameName("fire1.png");
+	m_pFireSprite = Sprite::createWithSpriteFrameName("fire_1.png");
 	Size fireSize = GET_CONTENTSIZE(m_pFireSprite);
 	m_pFireSprite->setScale(visibleSize.width * 1.1f / fireSize.width);
 	m_pFireSprite->setPosition(visibleSize.width / 2, fireSize.height / 2);
@@ -72,7 +73,7 @@ void CMenuScene::InitUI()
 	this->scheduleUpdate();
 
 	//±³¾°ÒôÀÖ
-	LOOP_PLAY_BGMUSIC(BGM_MENU1);
+	LOOP_PLAY_BGMUSIC(BGM_MENU);
 }
 
 
@@ -95,26 +96,20 @@ void CMenuScene::InitMenu()
 	this->addChild(menu);
 
 	//Ñ¡ÔñÍ¼Æ¬
-	//auto pSelect = Sprite::create("Images/select.png");
-	//Size selectSize = GET_CONTENTSIZE(pSelect);
-	//pSelect->setPosition(visibleSize.width / 2 - playBtnSize.width / 2 - selectSize.width / 2, visibleSize.height / 2);
-	//this->addChild(pSelect);
-	////¶¯×÷
-	//pSelect->runAction(
-	//	RepeatForever::create(
-	//	Sequence::createWithTwoActions(
-	//		MoveBy::create(0.2f, Vec2(-30, 0)),
-	//		MoveBy::create(0.2f, Vec2(30, 0))
-	//	)
-	//	)
-	//);
+	auto pSelect = CREATE_SPRITEWITHNAME("select_10.png");
+	Size selectSize = GET_CONTENTSIZE(pSelect);
+	pSelect->setPosition(visibleSize.width / 2 - playBtnSize.width / 2 - selectSize.width / 2, visibleSize.height / 2);
+	this->addChild(pSelect);
+	//¶¯×÷
+	pSelect->runAction(RepeatForever::create(Animate::create(GET_ANIM("SelectAnim"))));
 }
 
 
 //²Ëµ¥µã»÷
 void CMenuScene::OnMenuClick(Ref* pSender)
 {
-	log("playBtn OnMenuClick");
+	auto scene = CGameScene::CreateScene();
+	REPLACE_SCENE(scene);
 }
 
 
@@ -132,6 +127,6 @@ void CMenuScene::update(float dt)
 		}
 
 		//ÇÐ»»ÏÂÒ»Ö¡»ðÑæÍ¼Æ¬
-		m_pFireSprite->setSpriteFrame(GET_SPRITEFRAME(StringUtils::format("fire%d.png", m_iFireAnimIndex)));
+		m_pFireSprite->setSpriteFrame(GET_SPRITEFRAME(StringUtils::format("fire_%d.png", m_iFireAnimIndex)));
 	}
 }

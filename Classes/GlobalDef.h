@@ -67,10 +67,7 @@
 
 // ---- ±≥æ∞“Ù¿÷ ----
 
-#define BGM_MENU1 "Sounds/menubgm.mp3"
-
-#define BGM_MENU2 "Sounds/menubgm2.mp3"
-
+#define BGM_MENU "Sounds/menubgm.mp3"
 
 
 #endif //__GLOBAL_DEFINE_H_
