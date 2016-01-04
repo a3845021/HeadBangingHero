@@ -3,7 +3,7 @@
 
 USING_NS_CC;
 
-CGameScene::CGameScene() : m_iSex(SEX::MALE), m_iDirection(DIRECTION::NORMAL), m_pPersonSpr(NULL)
+CGameScene::CGameScene() : m_pPersonSpr(nullptr), m_pLeftBtn(nullptr), m_pRightBtn(nullptr), m_pUpBtn(nullptr), m_pDownBtn(nullptr)
 {
 	for (int i = 0; i < 5; ++i)
 	{
@@ -37,7 +37,7 @@ bool CGameScene::init()
 
 	InitUI();
 
-	CreatePerson();
+	CreateTouchListener();
 
 	return true;
 }
@@ -53,6 +53,9 @@ void CGameScene::InitUI()
 	pBg->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(pBg);
 
+	//初始化人物
+	UpdatePerson(DIRECTION::NORMAL);
+
 	//初始化分数
 	auto pScore = Sprite::create("Images/score.png");
 	pScore->setPosition(40, visibleSize.height - 44);
@@ -65,6 +68,98 @@ void CGameScene::InitUI()
 	pRate->setScale(0.7f);
 	this->addChild(pRate);
 	UpdateRate(10);
+
+	//创建按钮
+	m_pUpBtn = CREATE_SPRITEWITHNAME("up_normal.png");
+	m_pLeftBtn = CREATE_SPRITEWITHNAME("left_normal.png");
+	m_pDownBtn = CREATE_SPRITEWITHNAME("down_normal.png");
+	m_pRightBtn = CREATE_SPRITEWITHNAME("right_normal.png");
+
+	//计算间距
+	Size btnSize = GET_CONTENTSIZE(m_pUpBtn);
+	float fBtnPadding = (visibleSize.width - btnSize.width * 4) / 5;
+
+	//设置位置
+	float fCurX = fBtnPadding;
+	m_pUpBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
+	this->addChild(m_pUpBtn);
+
+	fCurX += btnSize.width + fBtnPadding;
+	m_pLeftBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
+	this->addChild(m_pLeftBtn);
+
+	fCurX += btnSize.width + fBtnPadding;
+	m_pDownBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
+	this->addChild(m_pDownBtn);
+
+	fCurX += btnSize.width + fBtnPadding;
+	m_pRightBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
+	this->addChild(m_pRightBtn);
+}
+
+
+//更新人物
+void CGameScene::UpdatePerson(int iDirection)
+{
+	Size visibleSize = GET_VISIBLESIZE();
+
+	//获取选择的性别
+	int iSex = GET_INTVALUE("Sex");
+
+	const char* arrSexList[2] = { "male", "female" };
+	std::string strName = StringUtils::format("%s_%d.png", arrSexList[iSex], iDirection);
+	if (m_pPersonSpr != nullptr)
+	{
+		m_pPersonSpr->setSpriteFrame(GET_SPRITEFRAME(strName));
+		return;
+	}
+
+	m_pPersonSpr = CREATE_SPRITEWITHNAME(strName);
+	m_pPersonSpr->setPosition(visibleSize.width / 2, visibleSize.height / 3.5f);
+	this->addChild(m_pPersonSpr);
+}
+
+
+//创建触摸监听
+void CGameScene::CreateTouchListener()
+{
+	auto touchListener = EventListenerTouchAllAtOnce::create();
+	touchListener->onTouchesBegan = [&](const std::vector<Touch*>& touches, Event* event)
+	{
+		//获取的当前触摸的目标
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+
+		typedef std::vector<Touch*>::const_iterator VECTOR_TOUCH_ITER;
+		for (VECTOR_TOUCH_ITER pIter = touches.begin(); pIter != touches.end(); ++pIter)
+		{
+			int iID = (*pIter)->getID();
+			if (iID < 4)
+			{
+				//获取触摸点位置
+				m_arrTouchPos[iID] = target->convertToNodeSpace((*pIter)->getLocation());
+				log("onTouchesBegan iID=%d touchPos:%f, %f", iID, m_arrTouchPos[iID].x, m_arrTouchPos[iID].y);
+			}
+		}
+	};
+
+	touchListener->onTouchesEnded = [&](const std::vector<Touch*>& touches, Event* event)
+	{
+		//获取的当前触摸的目标
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+
+		typedef std::vector<Touch*>::const_iterator VECTOR_TOUCH_ITER;
+		for (VECTOR_TOUCH_ITER pIter = touches.begin(); pIter != touches.end(); ++pIter)
+		{
+			int iID = (*pIter)->getID();
+			if (iID < 4)
+			{
+				//获取触摸点位置
+				Vec2 touchEndPos = target->convertToNodeSpace((*pIter)->getLocation());
+				log("onTouchEnded iID=%d touchPos:%f, %f", iID, touchEndPos.x, touchEndPos.y);
+			}
+		}
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 }
 
 
@@ -162,26 +257,3 @@ void CGameScene::UpdateRate(int iRate, bool bUpdate)
 		m_pArrRate[i]->setPosition(fCurWidth - numSize.width / 2, fCurHeight);
 	}
 }
-
-
-void CGameScene::CreatePerson()
-{
-	Size visibleSize = GET_VISIBLESIZE();
-
-	//获取选择的性别
-	int iSex = GET_INTVALUE("Sex");
-
-	const char* arrSexList[2] = {"male", "female"};
-	std::string strName = StringUtils::format("%s_%d.png", arrSexList[iSex], m_iDirection);
-	if (m_pPersonSpr != nullptr)
-	{
-		m_pPersonSpr->setSpriteFrame(GET_SPRITEFRAME(strName));
-		return;
-	}
-
-	m_pPersonSpr = CREATE_SPRITEWITHNAME(strName);
-	m_pPersonSpr->setPosition(visibleSize.width / 2, visibleSize.height / 3.5f);
-	this->addChild(m_pPersonSpr);
-}
-
-

@@ -46,15 +46,16 @@ void CLoadScene::InitUI()
 void CLoadScene::LoadResources()
 {
 	//加载Plist图集
-	const char* arrPlistPath[5] = 
+	const char* arrPlistPath[10] = 
 	{
-		"Plist/fireAnim.plist",
 		"Plist/female.plist",
 		"Plist/male.plist",
 		"Plist/num.plist",
-		"Plist/selectAnim.plist"
+		"Plist/fireAnim.plist",
+		"Plist/selectAnim.plist",
+		"Plist/button.plist",
 	};
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
 		ADD_SPRITEFRAME(arrPlistPath[i]);
 	}
