@@ -39,6 +39,10 @@ bool CGameScene::init()
 
 	CreateTouchListener();
 
+	CreateArrow(BTN_UP);
+
+	this->scheduleUpdate();
+
 	return true;
 }
 
@@ -54,7 +58,7 @@ void CGameScene::InitUI()
 	this->addChild(pBg);
 
 	//初始化人物
-	UpdatePerson(DIRECTION::NORMAL);
+	UpdatePerson(PERSON_DIRECTION::LEFT);
 
 	//初始化分数
 	auto pScore = Sprite::create("Images/score.png");
@@ -256,4 +260,99 @@ void CGameScene::UpdateRate(int iRate, bool bUpdate)
 		fCurWidth += numSize.width;
 		m_pArrRate[i]->setPosition(fCurWidth - numSize.width / 2, fCurHeight);
 	}
+}
+
+
+//创建箭头
+void CGameScene::CreateArrow(int iDirection)
+{
+	Sprite* pArrow = nullptr;
+	std::string strName = StringUtils::format("arrow_%d.png", iDirection);
+
+	//先检查箭头回收序列中是否有可用箭头
+	if (m_vecRecycleArrow.size() > 0)
+	{
+		pArrow = m_vecRecycleArrow.back();
+		m_vecRecycleArrow.popBack();
+
+		pArrow->setSpriteFrame(GET_SPRITEFRAME(strName));
+	}
+	else
+	{
+		pArrow = Sprite::createWithSpriteFrameName(strName);
+	}
+
+	float fCurX = 0;
+	float fCurY = GET_VISIBLESIZE().height + GET_CONTENTSIZE(pArrow).height / 2;
+
+	//设置位置
+	switch (iDirection)
+	{
+	case BTN_UP:
+		fCurX = m_pUpBtn->getPositionX();
+		break;
+	case BTN_LEFT:
+		fCurX = m_pLeftBtn->getPositionX();
+		break;
+	case BTN_RIGHT:
+		fCurX = m_pRightBtn->getPositionX();
+		break;
+	case BTN_DOWN:
+		fCurX = m_pDownBtn->getPositionX();
+		break;
+	}
+	pArrow->setPosition(fCurX, fCurY);
+	this->addChild(pArrow);
+
+	//放入有效序列中
+	m_vecValidArrow.pushBack(pArrow);
+}
+
+
+void CGameScene::update(float dt)
+{
+	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
+	while (pIter != m_vecValidArrow.end())
+	{
+		//更新位置
+		Sprite* pArrow = *pIter;
+		float fPosY = pArrow->getPositionY();
+		fPosY -= dt * 200;
+		pArrow->setPositionY(fPosY);
+		log("fPosY=%f", fPosY);
+
+		//检查边界
+		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
+		{
+			pIter = m_vecValidArrow.erase(pIter);
+			m_vecRecycleArrow.pushBack(pArrow);
+		}
+		else
+		{
+			++pIter;
+		}
+	}
+
+	/*
+	Vector<Sprite*> vecInvalidArrow;
+	for (int i = 0; i < m_vecValidArrow.size(); ++i)
+	{
+		Sprite* pArrow = m_vecValidArrow.at(i);
+		float fPosY = pArrow->getPositionY();
+		fPosY -= dt * 200;
+		pArrow->setPositionY(fPosY);
+		log("fPosY=%f", fPosY);
+
+		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
+		{
+			vecInvalidArrow.pushBack(pArrow);
+		}
+	}
+
+	for (int i = 0; i < vecInvalidArrow.size(); ++i)
+	{
+		Sprite* pArrow = vecInvalidArrow.at(i);
+		m_vecValidArrow.eraseObject(pArrow);
+		m_vecRecycleArrow.pushBack(pArrow);
+	}*/
 }

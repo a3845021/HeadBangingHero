@@ -25,7 +25,18 @@ public:
 	//更新倍率
 	void UpdateRate(int iRate, bool bUpdate = true);
 
+	//创建箭头
+	void CreateArrow(int iDirection);
+
+
+	void update(float dt);
+
+
 	CREATE_FUNC(CGameScene);
+
+private:
+	typedef cocos2d::Vector<cocos2d::Sprite*> VECTOR_SPRITE;
+	typedef VECTOR_SPRITE::iterator VECTOR_SPRITE_ITER;
 
 private:
 	cocos2d::Sprite* m_pPersonSpr;				//人物Sprite
@@ -48,13 +59,17 @@ private:
 
 	cocos2d::Vec2 m_arrTouchPos[4];				//触摸开始位置，支持4个点同时触摸
 
+	VECTOR_SPRITE m_vecValidArrow;				//有效箭头序列
+
+	VECTOR_SPRITE m_vecRecycleArrow;			//箭头回收序列
+
 	enum SEX
 	{
 		MALE,
 		FEMALE,
 	};
 
-	enum DIRECTION
+	enum PERSON_DIRECTION
 	{
 		NORMAL,
 		UP_RIGHT,
@@ -65,6 +80,14 @@ private:
 		LEFT,
 		LEFT_UP,
 		UP,
+	};
+
+	enum BUTTON_DIRECTION
+	{
+		BTN_UP,
+		BTN_LEFT,
+		BTN_DOWN,
+		BTN_RIGHT,
 	};
 };
 

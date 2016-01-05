@@ -54,8 +54,9 @@ void CLoadScene::LoadResources()
 		"Plist/fireAnim.plist",
 		"Plist/selectAnim.plist",
 		"Plist/button.plist",
+		"Plist/arrow.plist",
 	};
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 7; ++i)
 	{
 		ADD_SPRITEFRAME(arrPlistPath[i]);
 	}
