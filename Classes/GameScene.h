@@ -36,7 +36,7 @@ private:
 	//创建箭头
 	void CreateArrow(int iDirection);
 
-	//检查是否按下了哪个按钮
+	//检查按下了哪个按钮
 	int CheckButtonPressed(cocos2d::Vec2 pos);
 
 	//按钮按下

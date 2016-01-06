@@ -372,7 +372,7 @@ void CGameScene::update(float dt)
 }
 
 
-//检查是否按下了哪个按钮
+//检查按下了哪个按钮
 int CGameScene::CheckButtonPressed(Vec2 pos)
 {
 	for (int i = BTN_UP; i <= BTN_RIGHT; ++i)
@@ -391,7 +391,7 @@ int CGameScene::CheckButtonPressed(Vec2 pos)
 //按钮按下
 void CGameScene::OnButtonPressed(int iDirection)
 {
-	//获取按下的按钮Rect
+	//获取按下的按钮位置和大小
 	Sprite* pBtn = GetButtonByDirection(iDirection);
 	assert(pBtn != nullptr);
 	Vec2 btnPos = pBtn->getPosition();
@@ -476,3 +476,4 @@ bool CGameScene::CheckDistanceWithTwoPos(Vec2 srcPos, Vec2 destPos)
 	float fDistance = (destPos.x - srcPos.x) * (destPos.x - srcPos.x) + (destPos.y - srcPos.y) * (destPos.y - srcPos.y);
 	return FLOAT_GE(CLICK_MAX_DISTANCE * CLICK_MAX_DISTANCE, fDistance);
 }
+
