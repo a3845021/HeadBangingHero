@@ -3,7 +3,8 @@
 
 USING_NS_CC;
 
-CGameScene::CGameScene() : m_pPersonSpr(nullptr), m_pLeftBtn(nullptr), m_pRightBtn(nullptr), m_pUpBtn(nullptr), m_pDownBtn(nullptr)
+CGameScene::CGameScene() : m_pPersonSpr(nullptr), m_pLeftBtn(nullptr), m_pRightBtn(nullptr), 
+		m_pUpBtn(nullptr), m_pDownBtn(nullptr), m_iScore(0), m_iPersonDir(PERSON_DIRECTION::INVALID)
 {
 	for (int i = 0; i < 5; ++i)
 	{
@@ -58,7 +59,7 @@ void CGameScene::InitUI()
 	this->addChild(pBg);
 
 	//初始化人物
-	UpdatePerson(PERSON_DIRECTION::LEFT);
+	UpdatePerson(PERSON_DIRECTION::NORMAL);
 
 	//初始化分数
 	auto pScore = Sprite::create("Images/score.png");
@@ -71,7 +72,7 @@ void CGameScene::InitUI()
 	pRate->setPosition(40, visibleSize.height - 110);
 	pRate->setScale(0.7f);
 	this->addChild(pRate);
-	UpdateRate(10);
+	UpdateRate(1);
 
 	//创建按钮
 	m_pUpBtn = CREATE_SPRITEWITHNAME("up_normal.png");
@@ -105,13 +106,19 @@ void CGameScene::InitUI()
 //更新人物
 void CGameScene::UpdatePerson(int iDirection)
 {
+	if (m_iPersonDir == iDirection)
+	{
+		return;
+	}
+	m_iPersonDir = iDirection;
+
 	Size visibleSize = GET_VISIBLESIZE();
 
 	//获取选择的性别
 	int iSex = GET_INTVALUE("Sex");
 
 	const char* arrSexList[2] = { "male", "female" };
-	std::string strName = StringUtils::format("%s_%d.png", arrSexList[iSex], iDirection);
+	std::string strName = StringUtils::format("%s_%d.png", arrSexList[iSex], m_iPersonDir);
 	if (m_pPersonSpr != nullptr)
 	{
 		m_pPersonSpr->setSpriteFrame(GET_SPRITEFRAME(strName));
@@ -133,6 +140,8 @@ void CGameScene::CreateTouchListener()
 		//获取的当前触摸的目标
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 
+		int arrDirection[2] = { BTN_INVALID, BTN_INVALID };
+
 		typedef std::vector<Touch*>::const_iterator VECTOR_TOUCH_ITER;
 		for (VECTOR_TOUCH_ITER pIter = touches.begin(); pIter != touches.end(); ++pIter)
 		{
@@ -142,14 +151,26 @@ void CGameScene::CreateTouchListener()
 				//获取触摸点位置
 				m_arrTouchPos[iID] = target->convertToNodeSpace((*pIter)->getLocation());
 				log("onTouchesBegan iID=%d touchPos:%f, %f", iID, m_arrTouchPos[iID].x, m_arrTouchPos[iID].y);
+
+				int iDirection = CheckButtonPressed(m_arrTouchPos[iID]);
+				if (iDirection > BTN_INVALID)
+				{
+					arrDirection[0] = arrDirection[1];
+					arrDirection[1] = iDirection;
+				}
 			}
 		}
+
+		//更新人物
+		int iPersonDirection = TwoBtnDirConvToPersonDir(arrDirection[0], arrDirection[1]);
+		UpdatePerson(iPersonDirection);
 	};
 
 	touchListener->onTouchesEnded = [&](const std::vector<Touch*>& touches, Event* event)
 	{
 		//获取的当前触摸的目标
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		int iDirectionIndex = 0;
 
 		typedef std::vector<Touch*>::const_iterator VECTOR_TOUCH_ITER;
 		for (VECTOR_TOUCH_ITER pIter = touches.begin(); pIter != touches.end(); ++pIter)
@@ -160,17 +181,45 @@ void CGameScene::CreateTouchListener()
 				//获取触摸点位置
 				Vec2 touchEndPos = target->convertToNodeSpace((*pIter)->getLocation());
 				log("onTouchEnded iID=%d touchPos:%f, %f", iID, touchEndPos.x, touchEndPos.y);
+
+				//小于20像素算作点击
+				if (CheckDistanceWithTwoPos(m_arrTouchPos[iID], touchEndPos))
+				{
+					int iDirection = CheckButtonPressed(m_arrTouchPos[iID]);
+					if (iDirection > BTN_INVALID)
+					{
+						OnButtonPressed(iDirection);
+					}
+				}
 			}
 		}
+
+		UpdatePerson(PERSON_DIRECTION::NORMAL);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+}
+
+
+//两个按钮方向转换为人物方向
+int CGameScene::TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir)
+{
+	const int arrRelation[5][5] =
+	{
+		{ NORMAL, UP, LEFT, DOWN, RIGHT },
+		{ UP, UP, LEFT_UP, DOWN, UP_RIGHT },
+		{ LEFT, LEFT_UP, LEFT, DOWN_LEFT, RIGHT },
+		{ DOWN, UP, DOWN_LEFT, DOWN, RIGHT_DOWN },
+		{ RIGHT, UP_RIGHT, LEFT, RIGHT_DOWN, RIGHT },
+	};
+
+	return arrRelation[iFirstDir][iSecDir];
 }
 
 
 //更新分数
 void CGameScene::UpdateScore(int iScore, bool bUpdate)
 {
-	m_iScore = iScore;
+	m_iScore += iScore;
 	if (!bUpdate)
 	{
 		return;
@@ -220,7 +269,7 @@ void CGameScene::UpdateScore(int iScore, bool bUpdate)
 
 
 //更新倍数
-void CGameScene::UpdateRate(int iRate, bool bUpdate)
+void CGameScene::UpdateRate(int iRate)
 {
 	m_iRate = iRate < 1 ? 1 : iRate;
 
@@ -276,31 +325,19 @@ void CGameScene::CreateArrow(int iDirection)
 		m_vecRecycleArrow.popBack();
 
 		pArrow->setSpriteFrame(GET_SPRITEFRAME(strName));
+		pArrow->setVisible(true);
 	}
 	else
 	{
+		//创建
 		pArrow = Sprite::createWithSpriteFrameName(strName);
 	}
 
-	float fCurX = 0;
+	//设置箭头位置
+	Sprite* pBtn = GetButtonByDirection(iDirection);
+	assert(pBtn != nullptr);
+	float fCurX = pBtn->getPositionX();
 	float fCurY = GET_VISIBLESIZE().height + GET_CONTENTSIZE(pArrow).height / 2;
-
-	//设置位置
-	switch (iDirection)
-	{
-	case BTN_UP:
-		fCurX = m_pUpBtn->getPositionX();
-		break;
-	case BTN_LEFT:
-		fCurX = m_pLeftBtn->getPositionX();
-		break;
-	case BTN_RIGHT:
-		fCurX = m_pRightBtn->getPositionX();
-		break;
-	case BTN_DOWN:
-		fCurX = m_pDownBtn->getPositionX();
-		break;
-	}
 	pArrow->setPosition(fCurX, fCurY);
 	this->addChild(pArrow);
 
@@ -319,7 +356,7 @@ void CGameScene::update(float dt)
 		float fPosY = pArrow->getPositionY();
 		fPosY -= dt * 200;
 		pArrow->setPositionY(fPosY);
-		log("fPosY=%f", fPosY);
+		//log("fPosY=%f", fPosY);
 
 		//检查边界
 		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
@@ -332,27 +369,110 @@ void CGameScene::update(float dt)
 			++pIter;
 		}
 	}
+}
 
-	/*
-	Vector<Sprite*> vecInvalidArrow;
-	for (int i = 0; i < m_vecValidArrow.size(); ++i)
+
+//检查是否按下了哪个按钮
+int CGameScene::CheckButtonPressed(Vec2 pos)
+{
+	for (int i = BTN_UP; i <= BTN_RIGHT; ++i)
 	{
-		Sprite* pArrow = m_vecValidArrow.at(i);
-		float fPosY = pArrow->getPositionY();
-		fPosY -= dt * 200;
-		pArrow->setPositionY(fPosY);
-		log("fPosY=%f", fPosY);
-
-		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
+		Sprite* pBtn = GetButtonByDirection(i);
+		if (pBtn->getBoundingBox().containsPoint(pos))
 		{
-			vecInvalidArrow.pushBack(pArrow);
+			return i;
 		}
 	}
 
-	for (int i = 0; i < vecInvalidArrow.size(); ++i)
+	return BTN_INVALID;
+}
+
+
+//按钮按下
+void CGameScene::OnButtonPressed(int iDirection)
+{
+	//获取按下的按钮Rect
+	Sprite* pBtn = GetButtonByDirection(iDirection);
+	assert(pBtn != nullptr);
+	Vec2 btnPos = pBtn->getPosition();
+	Size btnSize = GET_CONTENTSIZE(pBtn);
+
+	//遍历所有有效的箭头，检查位置
+	bool bArrowFlag = false;
+	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
+	while (pIter != m_vecValidArrow.end())
 	{
-		Sprite* pArrow = vecInvalidArrow.at(i);
-		m_vecValidArrow.eraseObject(pArrow);
+		Sprite* pArrow = (Sprite*)(*pIter);
+		Vec2 arrowPos = pArrow->getPosition();
+		if (!FLOAT_EQ(arrowPos.x, btnPos.x))
+		{
+			++pIter;
+			continue;
+		}
+
+		//检查Y轴位置差距，差距绝对值小于箭头和按钮高度一半之和即有效
+		Size arrowSize = GET_CONTENTSIZE(pArrow);
+		float fMaxDistance = (btnSize.height + arrowSize.height) / 2;
+		float fCurDistance = fabs(arrowPos.y - btnPos.y);
+		if (!FLOAT_GE(fMaxDistance, fCurDistance))
+		{
+			++pIter;
+			continue;
+		}
+		
+		//隐藏箭头
+		pArrow->setVisible(false);
+
+		//回收当前箭头
+		pIter = m_vecValidArrow.erase(pIter);
 		m_vecRecycleArrow.pushBack(pArrow);
-	}*/
+
+		//计算本次获得的分数
+		int iScore = CalcScore(fMaxDistance, fCurDistance);
+		log("iScore=%d", iScore);
+		UpdateScore(iScore);
+
+		bArrowFlag = true;
+	}
+
+	UpdateRate(bArrowFlag ? (m_iRate + 1) : 1);
+}
+
+
+//获取指定方向按钮位置
+Sprite* CGameScene::GetButtonByDirection(int iDirection)
+{
+	switch (iDirection)
+	{
+	case BTN_UP:
+		return m_pUpBtn;
+		break;
+	case BTN_LEFT:
+		return m_pLeftBtn;
+		break;
+	case BTN_RIGHT:
+		return m_pRightBtn;
+		break;
+	case BTN_DOWN:
+		return m_pDownBtn;
+		break;
+	}
+
+	return nullptr;
+}
+
+
+//计算获得的分数
+int CGameScene::CalcScore(float fMaxDistance, float fCurDistance)
+{
+	float fPercent = fCurDistance / fMaxDistance;
+	return (int)(10.0f / fPercent * m_iRate);
+}
+
+
+//检查两个位置的距离
+bool CGameScene::CheckDistanceWithTwoPos(Vec2 srcPos, Vec2 destPos)
+{
+	float fDistance = (destPos.x - srcPos.x) * (destPos.x - srcPos.x) + (destPos.y - srcPos.y) * (destPos.y - srcPos.y);
+	return FLOAT_GE(CLICK_MAX_DISTANCE * CLICK_MAX_DISTANCE, fDistance);
 }

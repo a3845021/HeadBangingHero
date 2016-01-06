@@ -6,13 +6,17 @@
 #include <set>
 #include <list>
 
+
 #define CC_RETURN_FALSE_IF(exp) if(exp){return false;}
 
-#define FLOAT_EQ(a, b) fabs(a - b) < 1e-6
+#define FLOAT_EQ(a, b) (fabs(a - b) < 1e-6)
 
-#define FLOAT_GT(a, b) a - b > 1e-6
+#define FLOAT_GT(a, b) (a - b > 1e-6)
 
-#define FLOAT_GE(a, b) (FLOAT_EQ(a, b) || FLOAT_GT(a, b))
+#define FLOAT_GE(a, b) (FLOAT_GT(a, b) || FLOAT_EQ(a, b))
+
+#define CHECK_VEC2_DISTANCE(a, b, max) ((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) <= max * max)
+
 
 // ---- cocos 常用函数宏定义 ----
 #define DIRECTOR_INSTANCE Director::getInstance

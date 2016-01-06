@@ -4,7 +4,7 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>arrow_0.png</key>
+            <key>arrow_1.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{242,2},{78,78}}</string>
@@ -17,7 +17,7 @@
                 <key>sourceSize</key>
                 <string>{78,78}</string>
             </dict>
-            <key>arrow_1.png</key>
+            <key>arrow_2.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{162,2},{78,78}}</string>
@@ -30,7 +30,7 @@
                 <key>sourceSize</key>
                 <string>{78,78}</string>
             </dict>
-            <key>arrow_2.png</key>
+            <key>arrow_3.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{82,2},{78,78}}</string>
@@ -43,7 +43,7 @@
                 <key>sourceSize</key>
                 <string>{78,78}</string>
             </dict>
-            <key>arrow_3.png</key>
+            <key>arrow_4.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,2},{78,78}}</string>
@@ -66,7 +66,7 @@
             <key>size</key>
             <string>{322,82}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:c710765abd0035ca1b47c4b474fa231f$</string>
+            <string>$TexturePacker:SmartUpdate:85b59758b706d6ec013777c85ce6edfa$</string>
             <key>textureFileName</key>
             <string>arrow.png</string>
         </dict>

@@ -10,6 +10,14 @@ public:
 
 	bool init();
 
+	void update(float dt);
+
+
+	CREATE_FUNC(CGameScene);
+
+
+private:
+
 	//初始化UI
 	void InitUI();
 
@@ -23,16 +31,28 @@ public:
 	void UpdateScore(int iScore, bool bUpdate = true);
 
 	//更新倍率
-	void UpdateRate(int iRate, bool bUpdate = true);
+	void UpdateRate(int iRate);
 
 	//创建箭头
 	void CreateArrow(int iDirection);
 
+	//检查是否按下了哪个按钮
+	int CheckButtonPressed(cocos2d::Vec2 pos);
 
-	void update(float dt);
+	//按钮按下
+	void OnButtonPressed(int iDirection);
 
+	//获取指定方向按钮位置
+	cocos2d::Sprite* GetButtonByDirection(int iDirection);
 
-	CREATE_FUNC(CGameScene);
+	//计算获得的分数
+	int CalcScore(float fMaxDistance, float fCurDistance);
+
+	//检查两个位置的距离
+	bool CheckDistanceWithTwoPos(cocos2d::Vec2 srcPos, cocos2d::Vec2 destPos);
+
+	//两个按钮方向转换为人物方向
+	int TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir);
 
 private:
 	typedef cocos2d::Vector<cocos2d::Sprite*> VECTOR_SPRITE;
@@ -57,6 +77,8 @@ private:
 
 	int m_iRate;								//倍率
 
+	int m_iPersonDir;							//人物方向
+
 	cocos2d::Vec2 m_arrTouchPos[4];				//触摸开始位置，支持4个点同时触摸
 
 	VECTOR_SPRITE m_vecValidArrow;				//有效箭头序列
@@ -71,12 +93,13 @@ private:
 
 	enum PERSON_DIRECTION
 	{
+		INVALID = -1,
 		NORMAL,
 		UP_RIGHT,
 		RIGHT,
-		RIGHT_BOTTOM,
-		BOTTOM,
-		BOTTOM_LEFT,
+		RIGHT_DOWN,
+		DOWN,
+		DOWN_LEFT,
 		LEFT,
 		LEFT_UP,
 		UP,
@@ -84,10 +107,16 @@ private:
 
 	enum BUTTON_DIRECTION
 	{
+		BTN_INVALID = 0,
 		BTN_UP,
 		BTN_LEFT,
 		BTN_DOWN,
 		BTN_RIGHT,
+	};
+
+	enum 
+	{
+		CLICK_MAX_DISTANCE = 20,
 	};
 };
 
