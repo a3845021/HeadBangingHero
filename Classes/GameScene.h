@@ -54,6 +54,9 @@ private:
 	//两个按钮方向转换为人物方向
 	int TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir);
 
+	//获取人物位置偏移
+	cocos2d::Vec2 GetPersonPosOffset(int iSex, int iDirection);
+
 private:
 	typedef cocos2d::Vector<cocos2d::Sprite*> VECTOR_SPRITE;
 	typedef VECTOR_SPRITE::iterator VECTOR_SPRITE_ITER;

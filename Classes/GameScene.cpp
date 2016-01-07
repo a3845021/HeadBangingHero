@@ -116,18 +116,23 @@ void CGameScene::UpdatePerson(int iDirection)
 
 	//获取选择的性别
 	int iSex = GET_INTVALUE("Sex");
+	iSex = 1;
 
 	const char* arrSexList[2] = { "male", "female" };
 	std::string strName = StringUtils::format("%s_%d.png", arrSexList[iSex], m_iPersonDir);
 	if (m_pPersonSpr != nullptr)
 	{
 		m_pPersonSpr->setSpriteFrame(GET_SPRITEFRAME(strName));
-		return;
+	}
+	else
+	{
+		m_pPersonSpr = CREATE_SPRITEWITHNAME(strName);
+		m_pPersonSpr->setScale(1.3f);
+		this->addChild(m_pPersonSpr);
 	}
 
-	m_pPersonSpr = CREATE_SPRITEWITHNAME(strName);
-	m_pPersonSpr->setPosition(visibleSize.width / 2, visibleSize.height / 3.5f);
-	this->addChild(m_pPersonSpr);
+	Vec2 pos = Vec2(visibleSize.width / 2, visibleSize.height / 4) + GetPersonPosOffset(iSex, m_iPersonDir);
+	m_pPersonSpr->setPosition(pos);
 }
 
 
@@ -150,7 +155,7 @@ void CGameScene::CreateTouchListener()
 			{
 				//获取触摸点位置
 				m_arrTouchPos[iID] = target->convertToNodeSpace((*pIter)->getLocation());
-				log("onTouchesBegan iID=%d touchPos:%f, %f", iID, m_arrTouchPos[iID].x, m_arrTouchPos[iID].y);
+				//log("onTouchesBegan iID=%d touchPos:%f, %f", iID, m_arrTouchPos[iID].x, m_arrTouchPos[iID].y);
 
 				int iDirection = CheckButtonPressed(m_arrTouchPos[iID]);
 				if (iDirection > BTN_INVALID)
@@ -180,7 +185,7 @@ void CGameScene::CreateTouchListener()
 			{
 				//获取触摸点位置
 				Vec2 touchEndPos = target->convertToNodeSpace((*pIter)->getLocation());
-				log("onTouchEnded iID=%d touchPos:%f, %f", iID, touchEndPos.x, touchEndPos.y);
+				//log("onTouchEnded iID=%d touchPos:%f, %f", iID, touchEndPos.x, touchEndPos.y);
 
 				//小于20像素算作点击
 				if (CheckDistanceWithTwoPos(m_arrTouchPos[iID], touchEndPos))
@@ -205,7 +210,8 @@ int CGameScene::TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir)
 {
 	const int arrRelation[5][5] =
 	{
-		{ NORMAL, UP, LEFT, DOWN, RIGHT },
+		//{ NORMAL, UP, LEFT, DOWN, RIGHT },
+		{ NORMAL, LEFT_UP, DOWN_LEFT, RIGHT_DOWN, UP_RIGHT },
 		{ UP, UP, LEFT_UP, DOWN, UP_RIGHT },
 		{ LEFT, LEFT_UP, LEFT, DOWN_LEFT, RIGHT },
 		{ DOWN, UP, DOWN_LEFT, DOWN, RIGHT_DOWN },
@@ -258,10 +264,11 @@ void CGameScene::UpdateScore(int iScore, bool bUpdate)
 
 	float fCurWidth = 80;
 	float fNumMaxHeight = 44;
+	float fPadding = 3;
 	for (int i = iSprIndex - 1; i >= 0; --i)
 	{
 		Size numSize = GET_CONTENTSIZE(m_pArrScore[i]) * 0.7f;
-		fCurWidth += numSize.width;
+		fCurWidth += numSize.width + fPadding;
 		m_pArrScore[i]->setScale(0.7f);
 		m_pArrScore[i]->setPosition(fCurWidth - numSize.width / 2, visibleSize.height - fNumMaxHeight);
 	}
@@ -477,3 +484,26 @@ bool CGameScene::CheckDistanceWithTwoPos(Vec2 srcPos, Vec2 destPos)
 	return FLOAT_GE(CLICK_MAX_DISTANCE * CLICK_MAX_DISTANCE, fDistance);
 }
 
+
+Vec2 CGameScene::GetPersonPosOffset(int iSex, int iDirection)
+{
+	if (iDirection == PERSON_DIRECTION::INVALID)
+	{
+		return Vec2::ZERO;
+	}
+
+	const Vec2 arrPosList[9][2] =
+	{
+		{ Vec2(-18, -0.5f), Vec2(-16.5f, 6.5f) },
+		{ Vec2(-18.5f, 7), Vec2(-16.5f, 13.5f) },
+		{ Vec2(-3, 0), Vec2(0.5f, 6) },
+		{ Vec2(-18.5f, 0), Vec2(-16.5f, 6.5f) },
+		{ Vec2(-18.5f, 0), Vec2(-16.5f, 6.5f) },
+		{ Vec2(-18, 0.5f), Vec2(-16.5f, 6.5f) },
+		{ Vec2(-18.5f, 0), Vec2(-16.5f, 6.5f) },
+		{ Vec2(-18.5f, 11), Vec2(-16.5f, 13.5f) },
+		{ Vec2(-18.5f, 23.5f), Vec2(-16, 32) },
+	};
+
+	return arrPosList[iDirection][iSex];
+}
