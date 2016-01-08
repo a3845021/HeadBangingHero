@@ -75,3 +75,73 @@ void CDataManager::LoadData()
 	}
 }
 
+
+int CDataManager::GetStageCount(int iSongID)
+{
+	VECTOR_SONGDATA_ITER pIter = m_vecSongData.begin();
+	for (; pIter != m_vecSongData.end(); ++pIter)
+	{
+		if (pIter->iSongID == iSongID)
+		{
+			return pIter->vecStageData.size();
+		}
+	}
+
+	return 0;
+}
+
+
+StageData* CDataManager::GetStageData(int iSongID, int iStageIndex)
+{
+	VECTOR_SONGDATA_ITER pIter = m_vecSongData.begin();
+	for (; pIter != m_vecSongData.end(); ++pIter)
+	{
+		if (pIter->iSongID == iSongID)
+		{
+			VECTOR_STAGEDATA_ITER pStageIter = pIter->vecStageData.begin();
+			int iIndex = 0;
+			while (pStageIter != pIter->vecStageData.end())
+			{
+				if (iIndex == iStageIndex)
+				{
+					return &(*pStageIter);
+				}
+
+				++pStageIter;
+				++iIndex;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+
+float CDataManager::GetStageDelay(int iSongID, int iStageIndex)
+{
+	StageData* pStageData = GetStageData(iSongID, iStageIndex);
+	assert(pStageData != NULL);
+	return pStageData->fDelay;
+}
+
+
+ArrowData* CDataManager::GetArrowData(int iSongID, int iStageIndex, int iArrowIndex)
+{
+	StageData* pStageData = GetStageData(iSongID, iStageIndex);
+	assert(pStageData != NULL);
+
+	VECTOR_ARROWDATA_ITER pArrowIter = pStageData->vecArrowData.begin();
+	int iIndex= 0;
+	while (pArrowIter != pStageData->vecArrowData.end())
+	{
+		if (iArrowIndex == iIndex)
+		{
+			return &(*pArrowIter);
+		}
+
+		++pArrowIter;
+		++iIndex;
+	}
+
+	return NULL;
+}

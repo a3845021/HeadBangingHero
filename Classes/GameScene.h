@@ -21,6 +21,9 @@ private:
 	//初始化UI
 	void InitUI();
 
+	//更新Stage数据
+	void UpdateStageData();
+
 	//更新人物
 	void UpdatePerson(int iDirection);
 
@@ -76,17 +79,25 @@ private:
 
 	cocos2d::Sprite* m_pDownBtn;				//下按钮
 
+	cocos2d::Vec2 m_arrTouchPos[4];				//触摸开始位置，支持4个点同时触摸
+
+	VECTOR_SPRITE m_vecValidArrow;				//有效箭头序列
+
+	VECTOR_SPRITE m_vecRecycleArrow;			//箭头回收序列
+
+	StageData* m_pStageData;					//Stage数据
+
 	int m_iScore;								//分数
 
 	int m_iRate;								//倍率
 
 	int m_iPersonDir;							//人物方向
 
-	cocos2d::Vec2 m_arrTouchPos[4];				//触摸开始位置，支持4个点同时触摸
+	int m_iCurStageIdx;							//当前阶段索引
 
-	VECTOR_SPRITE m_vecValidArrow;				//有效箭头序列
+	int m_iLineIndex;							//当前到达第几行
 
-	VECTOR_SPRITE m_vecRecycleArrow;			//箭头回收序列
+	float m_iCurTime;							//当前经过时间
 
 	enum SEX
 	{

@@ -1,10 +1,12 @@
 #include "GameScene.h"
 #include "GlobalDef.h"
+#include "DataManager.h"
 
 USING_NS_CC;
 
 CGameScene::CGameScene() : m_pPersonSpr(nullptr), m_pLeftBtn(nullptr), m_pRightBtn(nullptr), 
-		m_pUpBtn(nullptr), m_pDownBtn(nullptr), m_iScore(0), m_iPersonDir(PERSON_DIRECTION::INVALID)
+m_pUpBtn(nullptr), m_pDownBtn(nullptr), m_iScore(0), 
+m_iPersonDir(PERSON_DIRECTION::INVALID), m_iCurStageIdx(0), m_iLineIndex(-1)
 {
 	for (int i = 0; i < 5; ++i)
 	{
@@ -40,7 +42,7 @@ bool CGameScene::init()
 
 	CreateTouchListener();
 
-	CreateArrow(BTN_UP);
+	UpdateStageData();
 
 	this->scheduleUpdate();
 
@@ -100,6 +102,13 @@ void CGameScene::InitUI()
 	fCurX += btnSize.width + fBtnPadding;
 	m_pRightBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
 	this->addChild(m_pRightBtn);
+}
+
+
+//更新Stage数据
+void CGameScene::UpdateStageData()
+{
+	m_pStageData = CDataManager::getInstance()->GetStageData(0, m_iCurStageIdx);
 }
 
 
@@ -355,6 +364,9 @@ void CGameScene::CreateArrow(int iDirection)
 
 void CGameScene::update(float dt)
 {
+	m_iCurTime += dt;
+
+	//更新所有箭头位置
 	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
 	while (pIter != m_vecValidArrow.end())
 	{
