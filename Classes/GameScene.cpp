@@ -497,7 +497,7 @@ Vec2 CGameScene::GetPersonPosOffset(int iSex, int iDirection)
 	{
 		{ Vec2(-18, -0.5f), Vec2(-16.5f, 6.5f) },
 		{ Vec2(-18.5f, 7), Vec2(-16.5f, 13.5f) },
-		{ Vec2(-3, 0), Vec2(0.5f, 6) },
+		{ Vec2(-3, 0),	Vec2(0.5f, 6) },
 		{ Vec2(-18.5f, 0), Vec2(-16.5f, 6.5f) },
 		{ Vec2(-18.5f, 0), Vec2(-16.5f, 6.5f) },
 		{ Vec2(-18, 0.5f), Vec2(-16.5f, 6.5f) },

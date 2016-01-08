@@ -71,12 +71,13 @@
 // ---- 背景音乐 ----
 
 #define BGM_MENU "Sounds/menubgm.mp3"
+#define BGM_CLICK "Sounds/click.mp3"
 
 
 
-
-// ---- 资源 ----
+// ---- 数据 ----
 #define SONG_CONFIG_PATH "Config/songs.json"
+
 
 // ---- 结构体 ---- 
 struct ArrowData
@@ -87,7 +88,7 @@ struct ArrowData
 
 struct StageData
 {
-	float fDelay;	//阶段延迟
+	double fDelay;	//阶段延迟
 	std::vector<ArrowData> vecArrowData;
 };
 

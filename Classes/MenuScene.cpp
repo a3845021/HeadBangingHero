@@ -108,6 +108,7 @@ void CMenuScene::InitMenu()
 //²Ëµ¥µã»÷
 void CMenuScene::OnMenuClick(Ref* pSender)
 {
+	PLAY_EFFECT(BGM_CLICK);
 	auto scene = CGameScene::CreateScene();
 	REPLACE_SCENE(scene);
 }
@@ -130,3 +131,4 @@ void CMenuScene::update(float dt)
 		m_pFireSprite->setSpriteFrame(GET_SPRITEFRAME(StringUtils::format("fire_%d.png", m_iFireAnimIndex)));
 	}
 }
+

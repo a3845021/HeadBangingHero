@@ -1,6 +1,7 @@
 #include "LoadScene.h"
 #include "MenuScene.h"
 #include "GlobalDef.h"
+#include "DataManager.h"
 
 USING_NS_CC;
 
@@ -63,6 +64,7 @@ void CLoadScene::LoadResources()
 
 	//预加载背景音乐、音效
 	PRELOAD_BGMUSIC(BGM_MENU);
+	PRELOAD_EFFECT(BGM_CLICK);
 
 	//创建动画
 	TSET_STRING setSpriteFrame;
@@ -93,6 +95,8 @@ void CLoadScene::OnEnterMenuScene(float dt)
 {
 	//加载资源
 	LoadResources();
+
+	CDataManager::getInstance()->LoadData();
 
 	//菜单界面
 	auto menuScene = CMenuScene::CreateScene();

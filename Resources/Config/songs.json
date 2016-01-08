@@ -1,49 +1,119 @@
 {
-	"songs": [
+	"songs": 
+	[
 		{
 			"id": 0,
 			"name": "Headbanging Tutorial",
 			"author": "MonoFlauta",
+			"data": 
+			[
+				{
+					"delay":2,
+					"stage":[
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0],
+						[1,0,0,0],
+						[0,0,1,0]
+					]
+				},
+				{
+					"delay":10,
+					"stage":[
+						[0,1,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,0,1],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,1,0,0],
+						[0,0,0,0],
+						[0,0,0,1],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,1,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,0,1],
+						[0,0,0,0],
+						[0,1,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,0,1],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,1,0,0]
+					]
+				},
+				{
+					"delay":12,
+					"stage":[
+						[1,1,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[1,0,0,1],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,1,1],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,0,0,0],
+						[0,1,1,0]
+					]
+				}		
+			]
 		},
 		{
 			"id": 1,
 			"name": "Riding On The Edge",
-			"author": "Xenogenocide",
+			"author": "Xenogenocide"
 		},
 		{
 			"id": 2,
 			"name": "Reach Equilibrium",
-			"author": "Xenogenocide",
+			"author": "Xenogenocide"
 		},
 		{
 			"id": 3,
 			"name": "Chorus Diaboli With Vocals",
-			"author": "Lashmush",
+			"author": "Lashmush"
 		},
 		{
 			"id": 4,
 			"name": "Tetris On The Toilet",
-			"author": "Evil Dog",
+			"author": "Evil Dog"
 		},
 		{
 			"id": 5,
 			"name": "Devil Swing",
-			"author": "AttackTheRadical",
+			"author": "AttackTheRadical"
 		},
 		{
 			"id": 6,
 			"name": "Sam  Death Mental",
-			"author": "eddsworld",
+			"author": "eddsworld"
 		},
 		{
 			"id": 7,
 			"name": "Song of Storms Metalized",
-			"author": "ArtificialFear",
+			"author": "ArtificialFear"
 		},
 		{
 			"id": 8,
 			"name": "Thorns Jeffaro",
-			"author": "Jeffaro",
-		},
+			"author": "Jeffaro"
+		}
 	]
 }
