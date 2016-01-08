@@ -108,7 +108,7 @@ void CGameScene::InitUI()
 //更新Stage数据
 void CGameScene::UpdateStageData()
 {
-	m_pStageData = CDataManager::getInstance()->GetStageData(0, m_iCurStageIdx);
+	m_pStageData = CDataManager::getInstance()->GetArrowData(0, m_iCurStageIdx);
 }
 
 
