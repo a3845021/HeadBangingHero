@@ -278,7 +278,7 @@ void CGameScene::UpdateScore(int iScore, bool bUpdate)
 //¸üÐÂ±¶Êý
 void CGameScene::UpdateRate(int iRate)
 {
-	m_iRate = iRate < 1 ? 1 : iRate;
+	m_iRate = iRate < 1 ? 1 : (iRate > 10 ? 10 : iRate);
 
 	Size visibleSize = GET_VISIBLESIZE();
 	int iSprIndex = 0;
@@ -473,7 +473,8 @@ Sprite* CGameScene::GetButtonByDirection(int iDirection)
 int CGameScene::CalcScore(float fMaxDistance, float fCurDistance)
 {
 	float fPercent = fCurDistance / fMaxDistance;
-	return (int)(10.0f / fPercent * m_iRate);
+	int iScore = 10.0f / fPercent * m_iRate;
+	return (iScore > 200 ? 200 : iScore);
 }
 
 

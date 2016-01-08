@@ -3,8 +3,7 @@
 
 // ---- 全局头文件 ----
 #include <string>
-#include <set>
-#include <list>
+#include <vector>
 
 
 #define CC_RETURN_FALSE_IF(exp) if(exp){return false;}
@@ -73,5 +72,31 @@
 
 #define BGM_MENU "Sounds/menubgm.mp3"
 
+
+
+
+// ---- 资源 ----
+#define SONG_CONFIG_PATH "Config/songs.json"
+
+// ---- 结构体 ---- 
+struct ArrowData
+{
+	int arrArrow[4];
+};
+
+
+struct StageData
+{
+	float fDelay;	//阶段延迟
+	std::vector<ArrowData> vecArrowData;
+};
+
+struct SongData
+{
+	int iSongID;
+	std::string strSongName;
+	std::string strAuthor;
+	std::vector<StageData> vecStageData;
+};
 
 #endif //__GLOBAL_DEFINE_H_
