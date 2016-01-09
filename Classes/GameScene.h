@@ -1,5 +1,6 @@
 #pragma once
 #include "cocos2d.h"
+
 class CGameScene : public cocos2d::Layer
 {
 public:
@@ -21,9 +22,6 @@ private:
 	//初始化UI
 	void InitUI();
 
-	//更新Stage数据
-	void UpdateStageData();
-
 	//更新人物
 	void UpdatePerson(int iDirection);
 
@@ -38,6 +36,9 @@ private:
 
 	//创建箭头
 	void CreateArrow(int iDirection);
+
+	//创建一组箭头
+	void CreateArrowGroup(int* arrArrow);
 
 	//检查按下了哪个按钮
 	int CheckButtonPressed(cocos2d::Vec2 pos);
@@ -69,7 +70,7 @@ private:
 
 	cocos2d::Sprite* m_pArrScore[5];			//分数序列
 
-	cocos2d::Sprite* m_pArrRate[3];				//倍率序列
+	cocos2d::Sprite* m_pArrRate[2];				//倍率序列
 
 	cocos2d::Sprite* m_pLeftBtn;				//左按钮
 
@@ -85,8 +86,6 @@ private:
 
 	VECTOR_SPRITE m_vecRecycleArrow;			//箭头回收序列
 
-	StageData* m_pStageData;					//Stage数据
-
 	int m_iScore;								//分数
 
 	int m_iRate;								//倍率
@@ -98,6 +97,10 @@ private:
 	int m_iLineIndex;							//当前到达第几行
 
 	float m_iCurTime;							//当前经过时间
+
+	bool m_bStageStarted;						//阶段是否开始
+
+	bool bGameStarted;							//游戏开始标志
 
 	enum SEX
 	{
@@ -131,6 +134,7 @@ private:
 	enum 
 	{
 		CLICK_MAX_DISTANCE = 20,
+		LINE_INTERVAL = 400,		//每200毫秒产生一组箭头
 	};
 };
 

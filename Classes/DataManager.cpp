@@ -44,7 +44,7 @@ void CDataManager::LoadData()
 
 	for (int i = 0; i < oDoc["songs"].Size(); ++i)
 	{
-		SongData stSongData;
+		SongData& stSongData = m_mapSongData[i];
 		stSongData.iSongID = oDoc["songs"][i]["id"].GetInt();
 		stSongData.strSongName = oDoc["songs"][i]["name"].GetString();
 		stSongData.strAuthor = oDoc["songs"][i]["author"].GetString();
@@ -53,67 +53,33 @@ void CDataManager::LoadData()
 		{
 			for (int j = 0; j < oDoc["songs"][i]["data"].Size(); ++j)
 			{
-				StageData stStageData;
+				StageData& stStageData = stSongData.mapStageData[j];
 				stStageData.fDelay = oDoc["songs"][i]["data"][j]["delay"].GetDouble();
 
 				for (int k = 0; k < oDoc["songs"][i]["data"][j]["stage"].Size(); ++k)
 				{
-					ArrowData stArrow;
+					ArrowData& stArrow = stStageData.mapArrowData[k];
 					for (int l = 0; l < oDoc["songs"][i]["data"][j]["stage"][k].Size(); ++l)
 					{
 						stArrow.arrArrow[l] = oDoc["songs"][i]["data"][j]["stage"][k][l].GetInt();
 					}
-
-					stStageData.vecArrowData.push_back(stArrow);
 				}
-
-				stSongData.vecStageData.push_back(stStageData);
 			}
 		}
-
-		m_vecSongData.push_back(stSongData);
 	}
 }
 
 
 int CDataManager::GetStageCount(int iSongID)
 {
-	VECTOR_SONGDATA_ITER pIter = m_vecSongData.begin();
-	for (; pIter != m_vecSongData.end(); ++pIter)
-	{
-		if (pIter->iSongID == iSongID)
-		{
-			return pIter->vecStageData.size();
-		}
-	}
-
-	return 0;
+	SongData& mapSongData = m_mapSongData[iSongID];
+	return mapSongData.mapStageData.size();
 }
 
 
 StageData* CDataManager::GetStageData(int iSongID, int iStageIndex)
 {
-	VECTOR_SONGDATA_ITER pIter = m_vecSongData.begin();
-	for (; pIter != m_vecSongData.end(); ++pIter)
-	{
-		if (pIter->iSongID == iSongID)
-		{
-			VECTOR_STAGEDATA_ITER pStageIter = pIter->vecStageData.begin();
-			int iIndex = 0;
-			while (pStageIter != pIter->vecStageData.end())
-			{
-				if (iIndex == iStageIndex)
-				{
-					return &(*pStageIter);
-				}
-
-				++pStageIter;
-				++iIndex;
-			}
-		}
-	}
-
-	return NULL;
+	return &(m_mapSongData[iSongID].mapStageData[iStageIndex]);
 }
 
 
@@ -130,18 +96,5 @@ ArrowData* CDataManager::GetArrowData(int iSongID, int iStageIndex, int iArrowIn
 	StageData* pStageData = GetStageData(iSongID, iStageIndex);
 	assert(pStageData != NULL);
 
-	VECTOR_ARROWDATA_ITER pArrowIter = pStageData->vecArrowData.begin();
-	int iIndex= 0;
-	while (pArrowIter != pStageData->vecArrowData.end())
-	{
-		if (iArrowIndex == iIndex)
-		{
-			return &(*pArrowIter);
-		}
-
-		++pArrowIter;
-		++iIndex;
-	}
-
-	return NULL;
+	return &(pStageData->mapArrowData[iArrowIndex]);
 }

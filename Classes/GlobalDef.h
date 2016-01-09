@@ -3,7 +3,7 @@
 
 // ---- 全局头文件 ----
 #include <string>
-#include <vector>
+#include <map>
 
 
 #define CC_RETURN_FALSE_IF(exp) if(exp){return false;}
@@ -50,6 +50,8 @@
 
 #define STOP_BGMUSIC CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic
 
+#define PAUSE_MUSIC CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic
+
 #define PRELOAD_EFFECT(name) CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect(name)
 
 #define PLAY_EFFECT(name) CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(name)
@@ -89,7 +91,7 @@ struct ArrowData
 struct StageData
 {
 	double fDelay;	//阶段延迟
-	std::vector<ArrowData> vecArrowData;
+	std::map<int, ArrowData> mapArrowData;
 };
 
 struct SongData
@@ -97,7 +99,7 @@ struct SongData
 	int iSongID;
 	std::string strSongName;
 	std::string strAuthor;
-	std::vector<StageData> vecStageData;
+	std::map<int, StageData> mapStageData;
 };
 
 #endif //__GLOBAL_DEFINE_H_

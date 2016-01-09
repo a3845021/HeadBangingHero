@@ -21,14 +21,14 @@ public:
 	ArrowData* GetArrowData(int iSongID, int iStageIndex, int iArrowIndex);
 
 private:
-	typedef std::vector<SongData> VECTOR_SONGDATA;
-	typedef VECTOR_SONGDATA::iterator VECTOR_SONGDATA_ITER;
-	typedef std::vector<StageData> VECTOR_STAGEDATA;
-	typedef VECTOR_STAGEDATA::iterator VECTOR_STAGEDATA_ITER;
-	typedef std::vector<ArrowData> VECTOR_ARROWDATA;
-	typedef VECTOR_ARROWDATA::iterator VECTOR_ARROWDATA_ITER;
+	typedef std::map<int, SongData> TMAP_SONGDATA;
+	typedef TMAP_SONGDATA::iterator TMAP_SONGDATA_ITER;
+	typedef std::map<int, StageData> TMAP_STAGEDATA;
+	typedef TMAP_STAGEDATA::iterator TMAP_STAGEDATA_ITER;
+	typedef std::map<int, ArrowData> TMAP_ARROWDATA;
+	typedef TMAP_ARROWDATA::iterator TMAP_ARROWDATA_ITER;
 
 private:
-	std::vector<SongData> m_vecSongData;
+	std::map<int, SongData> m_mapSongData;
 };
 

@@ -1,22 +1,14 @@
 #include "GameScene.h"
-#include "GlobalDef.h"
 #include "DataManager.h"
+#include "GlobalDef.h"
 
 USING_NS_CC;
 
 CGameScene::CGameScene() : m_pPersonSpr(nullptr), m_pLeftBtn(nullptr), m_pRightBtn(nullptr), 
-m_pUpBtn(nullptr), m_pDownBtn(nullptr), m_iScore(0), 
-m_iPersonDir(PERSON_DIRECTION::INVALID), m_iCurStageIdx(0), m_iLineIndex(-1)
+m_pUpBtn(nullptr), m_pDownBtn(nullptr), m_iScore(0), m_iCurStageIdx(0), m_iLineIndex(0), m_iRate(0),
+m_iPersonDir(PERSON_DIRECTION::INVALID), m_bStageStarted(false), m_iCurTime(0), bGameStarted(true)
 {
-	for (int i = 0; i < 5; ++i)
-	{
-		m_pArrScore[i] = nullptr;
-	}
-
-	for (int i = 0; i < 5; ++i)
-	{
-		m_pArrRate[i] = nullptr;
-	}
+	
 }
 
 
@@ -42,8 +34,6 @@ bool CGameScene::init()
 
 	CreateTouchListener();
 
-	UpdateStageData();
-
 	this->scheduleUpdate();
 
 	return true;
@@ -67,18 +57,34 @@ void CGameScene::InitUI()
 	auto pScore = Sprite::create("Images/score.png");
 	pScore->setPosition(40, visibleSize.height - 44);
 	this->addChild(pScore);
-	UpdateScore(0);
 
 	//初始化倍率
 	auto pRate = CREATE_SPRITEWITHNAME("num_10.png");
 	pRate->setPosition(40, visibleSize.height - 110);
 	pRate->setScale(0.7f);
 	this->addChild(pRate);
+
+	//初始化分数Sprite列表
+	for (int i = 0; i < 5; ++i)
+	{
+		m_pArrScore[i] = Sprite::create();
+		this->addChild(m_pArrScore[i]);
+	}
+	UpdateScore(0);
+
+	//初始化倍率列表
+	for (int i = 0; i < 2; ++i)
+	{
+		m_pArrRate[i] = Sprite::create();
+		this->addChild(m_pArrRate[i]);
+	}
 	UpdateRate(1);
+
 
 	//创建按钮
 	m_pUpBtn = CREATE_SPRITEWITHNAME("up_normal.png");
 	m_pLeftBtn = CREATE_SPRITEWITHNAME("left_normal.png");
+	log("%d", m_pLeftBtn);
 	m_pDownBtn = CREATE_SPRITEWITHNAME("down_normal.png");
 	m_pRightBtn = CREATE_SPRITEWITHNAME("right_normal.png");
 
@@ -102,13 +108,10 @@ void CGameScene::InitUI()
 	fCurX += btnSize.width + fBtnPadding;
 	m_pRightBtn->setPosition(fCurX + btnSize.width / 2, btnSize.height);
 	this->addChild(m_pRightBtn);
-}
 
 
-//更新Stage数据
-void CGameScene::UpdateStageData()
-{
-	m_pStageData = CDataManager::getInstance()->GetArrowData(0, m_iCurStageIdx);
+	//背景音乐
+	PLAY_BGMUSIC("Sounds/song_0.mp3");
 }
 
 
@@ -235,51 +238,33 @@ int CGameScene::TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir)
 void CGameScene::UpdateScore(int iScore, bool bUpdate)
 {
 	m_iScore += iScore;
-	if (!bUpdate)
-	{
-		return;
-	}
 
 	Size visibleSize = GET_VISIBLESIZE();
+
+	char arrNum[5] = { '\0' };
+	sprintf(arrNum, "%d", m_iScore);
+
 	int iSprIndex = 0;
-	if (m_iScore == 0)
-	{
-		m_pArrScore[iSprIndex] = CREATE_SPRITEWITHNAME("num_0.png");
-		this->addChild(m_pArrScore[iSprIndex]);
-		++iSprIndex;
-	}
-	else
-	{
-		int iTempScore = m_iScore;
-		while (iTempScore > 0)
-		{
-			int iTempNum = iTempScore % 10;
-			iTempScore /= 10;
-
-			std::string strName = StringUtils::format("num_%d.png", iTempNum);
-			if (m_pArrScore[iSprIndex] != nullptr)
-			{
-				m_pArrScore[iSprIndex]->setSpriteFrame(GET_SPRITEFRAME(strName));
-			}
-			else
-			{
-				m_pArrScore[iSprIndex] = CREATE_SPRITEWITHNAME(strName);
-				this->addChild(m_pArrScore[iSprIndex]);
-			}
-
-			++iSprIndex;
-		}
-	}
-
 	float fCurWidth = 80;
 	float fNumMaxHeight = 44;
 	float fPadding = 3;
-	for (int i = iSprIndex - 1; i >= 0; --i)
+
+	while (iSprIndex < 5)
 	{
-		Size numSize = GET_CONTENTSIZE(m_pArrScore[i]) * 0.7f;
+		std::string strName = StringUtils::format("num_%d.png", arrNum[iSprIndex] - 48);
+		m_pArrScore[iSprIndex]->setSpriteFrame(GET_SPRITEFRAME(strName));
+		
+		//设置位置
+		Size numSize = GET_CONTENTSIZE(m_pArrScore[iSprIndex]) * 0.7f;
 		fCurWidth += numSize.width + fPadding;
-		m_pArrScore[i]->setScale(0.7f);
-		m_pArrScore[i]->setPosition(fCurWidth - numSize.width / 2, visibleSize.height - fNumMaxHeight);
+		m_pArrScore[iSprIndex]->setScale(0.7f);
+		m_pArrScore[iSprIndex]->setPosition(fCurWidth - numSize.width / 2, visibleSize.height - fNumMaxHeight);
+		
+		++iSprIndex;
+		if (arrNum[iSprIndex] == 0)
+		{
+			break;
+		}
 	}
 }
 
@@ -287,43 +272,46 @@ void CGameScene::UpdateScore(int iScore, bool bUpdate)
 //更新倍数
 void CGameScene::UpdateRate(int iRate)
 {
+	if (m_iRate == iRate)
+	{
+		return;
+	}
+
 	m_iRate = iRate < 1 ? 1 : (iRate > 10 ? 10 : iRate);
 
 	Size visibleSize = GET_VISIBLESIZE();
-	int iSprIndex = 0;
-	
-	int iTempRate = m_iRate;
-	while (iTempRate > 0)
-	{
-		int iTempNum = iTempRate % 10;
-		iTempRate /= 10;
 
-		std::string strName = StringUtils::format("num_%d.png", iTempNum);
-
-		if (m_pArrRate[iSprIndex] != nullptr)
-		{
-			m_pArrRate[iSprIndex]->setSpriteFrame(GET_SPRITEFRAME(strName));
-		}
-		else
-		{
-			m_pArrRate[iSprIndex] = CREATE_SPRITEWITHNAME(strName);
-			this->addChild(m_pArrRate[iSprIndex]);
-		}
-		m_pArrRate[iSprIndex]->setScale(0.7f + (m_iRate - 1) * 0.05f);
-
-
-		++iSprIndex;
-	}
-
-	//设置位置
+	//位置
 	float fCurWidth = 80;
 	float fNumMaxHeight = 45 * 1.15f;
 	float fCurHeight = visibleSize.height - 58 - fNumMaxHeight;
-	for (int i = iSprIndex - 1; i >= 0; --i)
+
+	char arrNum[2] = { '\0' };
+	sprintf(arrNum, "%d", m_iRate);
+
+	int iSprIndex = 0;
+	while (iSprIndex < 2)
 	{
-		Size numSize = GET_CONTENTSIZE(m_pArrRate[i]) * (0.7f + (m_iRate - 1) * 0.05f);
+		std::string strName = StringUtils::format("num_%d.png", arrNum[iSprIndex] - 48);
+		m_pArrRate[iSprIndex]->setSpriteFrame(GET_SPRITEFRAME(strName));
+		m_pArrRate[iSprIndex]->setScale(0.7f + (m_iRate - 1) * 0.05f);
+
+		//设置位置
+		Size numSize = GET_CONTENTSIZE(m_pArrRate[iSprIndex]) * (0.7f + (m_iRate - 1) * 0.05f);
 		fCurWidth += numSize.width;
-		m_pArrRate[i]->setPosition(fCurWidth - numSize.width / 2, fCurHeight);
+		m_pArrRate[iSprIndex]->setPosition(fCurWidth - numSize.width / 2, fCurHeight);
+		m_pArrRate[iSprIndex]->setVisible(true);
+
+		++iSprIndex;
+		if (arrNum[iSprIndex] == 0)
+		{
+			break;
+		}
+	}
+
+	for (int i = iSprIndex; i < 2; ++i)
+	{
+		m_pArrRate[i]->setVisible(false);
 	}
 }
 
@@ -341,12 +329,12 @@ void CGameScene::CreateArrow(int iDirection)
 		m_vecRecycleArrow.popBack();
 
 		pArrow->setSpriteFrame(GET_SPRITEFRAME(strName));
-		pArrow->setVisible(true);
 	}
 	else
 	{
 		//创建
 		pArrow = Sprite::createWithSpriteFrameName(strName);
+		this->addChild(pArrow);
 	}
 
 	//设置箭头位置
@@ -355,37 +343,20 @@ void CGameScene::CreateArrow(int iDirection)
 	float fCurX = pBtn->getPositionX();
 	float fCurY = GET_VISIBLESIZE().height + GET_CONTENTSIZE(pArrow).height / 2;
 	pArrow->setPosition(fCurX, fCurY);
-	this->addChild(pArrow);
 
 	//放入有效序列中
 	m_vecValidArrow.pushBack(pArrow);
 }
 
 
-void CGameScene::update(float dt)
+//创建一组箭头
+void CGameScene::CreateArrowGroup(int* arrArrow)
 {
-	m_iCurTime += dt;
-
-	//更新所有箭头位置
-	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
-	while (pIter != m_vecValidArrow.end())
+	for (int i = 0; i < 4; ++i)
 	{
-		//更新位置
-		Sprite* pArrow = *pIter;
-		float fPosY = pArrow->getPositionY();
-		fPosY -= dt * 200;
-		pArrow->setPositionY(fPosY);
-		//log("fPosY=%f", fPosY);
-
-		//检查边界
-		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
+		if (arrArrow[i] == 1)
 		{
-			pIter = m_vecValidArrow.erase(pIter);
-			m_vecRecycleArrow.pushBack(pArrow);
-		}
-		else
-		{
-			++pIter;
+			CreateArrow(i + 1);
 		}
 	}
 }
@@ -417,7 +388,6 @@ void CGameScene::OnButtonPressed(int iDirection)
 	Size btnSize = GET_CONTENTSIZE(pBtn);
 
 	//遍历所有有效的箭头，检查位置
-	bool bArrowFlag = false;
 	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
 	while (pIter != m_vecValidArrow.end())
 	{
@@ -433,28 +403,26 @@ void CGameScene::OnButtonPressed(int iDirection)
 		Size arrowSize = GET_CONTENTSIZE(pArrow);
 		float fMaxDistance = (btnSize.height + arrowSize.height) / 2;
 		float fCurDistance = fabs(arrowPos.y - btnPos.y);
-		if (!FLOAT_GE(fMaxDistance, fCurDistance))
+		if (FLOAT_GE(fMaxDistance, fCurDistance))
 		{
-			++pIter;
+			//设置箭头位置
+			pArrow->setPositionY(-arrowSize.height);
+
+			//回收当前箭头
+			pIter = m_vecValidArrow.erase(pIter);
+			m_vecRecycleArrow.pushBack(pArrow);
+
+			//计算本次获得的分数
+			int iScore = CalcScore(fMaxDistance, fCurDistance);
+			log("iScore=%d", iScore);
+			UpdateScore(iScore);
+
+			UpdateRate(m_iRate + 1);
 			continue;
 		}
-		
-		//隐藏箭头
-		pArrow->setVisible(false);
 
-		//回收当前箭头
-		pIter = m_vecValidArrow.erase(pIter);
-		m_vecRecycleArrow.pushBack(pArrow);
-
-		//计算本次获得的分数
-		int iScore = CalcScore(fMaxDistance, fCurDistance);
-		log("iScore=%d", iScore);
-		UpdateScore(iScore);
-
-		bArrowFlag = true;
+		++pIter;
 	}
-
-	UpdateRate(bArrowFlag ? (m_iRate + 1) : 1);
 }
 
 
@@ -520,3 +488,84 @@ Vec2 CGameScene::GetPersonPosOffset(int iSex, int iDirection)
 
 	return arrPosList[iDirection][iSex];
 }
+
+
+void CGameScene::update(float dt)
+{
+	m_iCurTime += dt;
+
+	if (bGameStarted)
+	{
+		//阶段数据
+		StageData* pStageData = CDataManager::getInstance()->GetStageData(0, m_iCurStageIdx);
+		if (m_bStageStarted)
+		{
+			if (FLOAT_GE(m_iCurTime, LINE_INTERVAL * 0.001))
+			{
+				m_iCurTime = 0;
+				ArrowData* pArrowData = &pStageData->mapArrowData[m_iLineIndex];
+				CreateArrowGroup(pArrowData->arrArrow);
+
+				//切换下一行
+				++m_iLineIndex;
+				if (m_iLineIndex >= pStageData->mapArrowData.size())
+				{
+					//切换下一个阶段
+					++m_iCurStageIdx;
+					if (m_iCurStageIdx >= CDataManager::getInstance()->GetStageCount(0))
+					{
+						bGameStarted = false;
+					}
+
+					//设置未开始
+					m_bStageStarted = false;
+				}
+			}
+		}
+		else
+		{
+			if (m_iCurTime >= pStageData->fDelay)
+			{
+				m_iCurTime = 0;
+
+				//重置当前行
+				m_iLineIndex = 0;
+
+				//设置开始
+				m_bStageStarted = true;
+			}
+		}
+	}
+	else if(m_vecValidArrow.empty())
+	{
+		log("Game over");
+		this->unscheduleUpdate();
+		return;
+	}
+
+	
+	//更新所有箭头位置
+	VECTOR_SPRITE_ITER pIter = m_vecValidArrow.begin();
+	while (pIter != m_vecValidArrow.end())
+	{
+		//更新位置
+		Sprite* pArrow = *pIter;
+		float fPosY = pArrow->getPositionY();
+		fPosY -= dt * 200;
+		pArrow->setPositionY(fPosY);
+
+		//检查边界
+		if (fPosY < -GET_CONTENTSIZE(pArrow).height / 2)
+		{
+			pIter = m_vecValidArrow.erase(pIter);
+			m_vecRecycleArrow.pushBack(pArrow);
+
+			UpdateRate(1);
+		}
+		else
+		{
+			++pIter;
+		}
+	}
+}
+
