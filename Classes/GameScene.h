@@ -46,6 +46,9 @@ private:
 	//按钮按下
 	void OnButtonPressed(int iDirection);
 
+	//按钮释放
+	void OnButtonReleased(int iDirection);
+
 	//获取指定方向按钮位置
 	cocos2d::Sprite* GetButtonByDirection(int iDirection);
 
@@ -60,6 +63,9 @@ private:
 
 	//获取人物位置偏移
 	cocos2d::Vec2 GetPersonPosOffset(int iSex, int iDirection);
+
+	//设置按钮状态：改变Sprite
+	void SetButtonState(int iDirection, bool bPressed);
 
 private:
 	typedef cocos2d::Vector<cocos2d::Sprite*> VECTOR_SPRITE;
@@ -79,8 +85,6 @@ private:
 	cocos2d::Sprite* m_pUpBtn;					//上按钮
 
 	cocos2d::Sprite* m_pDownBtn;				//下按钮
-
-	cocos2d::Vec2 m_arrTouchPos[4];				//触摸开始位置，支持4个点同时触摸
 
 	VECTOR_SPRITE m_vecValidArrow;				//有效箭头序列
 

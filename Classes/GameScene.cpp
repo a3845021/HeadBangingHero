@@ -166,12 +166,13 @@ void CGameScene::CreateTouchListener()
 			if (iID < 4)
 			{
 				//获取触摸点位置
-				m_arrTouchPos[iID] = target->convertToNodeSpace((*pIter)->getLocation());
+				Vec2 touchStartPos = target->convertToNodeSpace((*pIter)->getLocation());
 				//log("onTouchesBegan iID=%d touchPos:%f, %f", iID, m_arrTouchPos[iID].x, m_arrTouchPos[iID].y);
 
-				int iDirection = CheckButtonPressed(m_arrTouchPos[iID]);
+				int iDirection = CheckButtonPressed(touchStartPos);
 				if (iDirection > BTN_INVALID)
 				{
+					OnButtonPressed(iDirection);
 					arrDirection[0] = arrDirection[1];
 					arrDirection[1] = iDirection;
 				}
@@ -199,14 +200,10 @@ void CGameScene::CreateTouchListener()
 				Vec2 touchEndPos = target->convertToNodeSpace((*pIter)->getLocation());
 				//log("onTouchEnded iID=%d touchPos:%f, %f", iID, touchEndPos.x, touchEndPos.y);
 
-				//小于20像素算作点击
-				if (CheckDistanceWithTwoPos(m_arrTouchPos[iID], touchEndPos))
+				int iDirection = CheckButtonPressed(touchEndPos);
+				if (iDirection > BTN_INVALID)
 				{
-					int iDirection = CheckButtonPressed(m_arrTouchPos[iID]);
-					if (iDirection > BTN_INVALID)
-					{
-						OnButtonPressed(iDirection);
-					}
+					OnButtonReleased(iDirection);
 				}
 			}
 		}
@@ -222,8 +219,8 @@ int CGameScene::TwoBtnDirConvToPersonDir(int iFirstDir, int iSecDir)
 {
 	const int arrRelation[5][5] =
 	{
-		//{ NORMAL, UP, LEFT, DOWN, RIGHT },
-		{ NORMAL, LEFT_UP, DOWN_LEFT, RIGHT_DOWN, UP_RIGHT },
+		{ NORMAL, UP, LEFT, DOWN, RIGHT },
+		//{ NORMAL, LEFT_UP, DOWN_LEFT, RIGHT_DOWN, UP_RIGHT },
 		{ UP, UP, LEFT_UP, DOWN, UP_RIGHT },
 		{ LEFT, LEFT_UP, LEFT, DOWN_LEFT, RIGHT },
 		{ DOWN, UP, DOWN_LEFT, DOWN, RIGHT_DOWN },
@@ -381,6 +378,9 @@ int CGameScene::CheckButtonPressed(Vec2 pos)
 //按钮按下
 void CGameScene::OnButtonPressed(int iDirection)
 {
+	//设置按钮状态
+	SetButtonState(iDirection, true);
+
 	//获取按下的按钮位置和大小
 	Sprite* pBtn = GetButtonByDirection(iDirection);
 	assert(pBtn != nullptr);
@@ -423,6 +423,13 @@ void CGameScene::OnButtonPressed(int iDirection)
 
 		++pIter;
 	}
+}
+
+
+//按钮释放
+void CGameScene::OnButtonReleased(int iDirection)
+{
+	SetButtonState(iDirection, false);
 }
 
 
@@ -569,3 +576,23 @@ void CGameScene::update(float dt)
 	}
 }
 
+
+//设置按钮状态：改变Sprite
+void CGameScene::SetButtonState(int iDirection, bool bPressed)
+{
+	switch (iDirection)
+	{
+	case BTN_UP:
+		m_pUpBtn->setSpriteFrame(GET_SPRITEFRAME(bPressed ? "up_pressed.png" : "up_normal.png"));
+		break;
+	case BTN_LEFT:
+		m_pLeftBtn->setSpriteFrame(GET_SPRITEFRAME(bPressed ? "left_pressed.png" : "left_normal.png"));
+		break;
+	case BTN_RIGHT:
+		m_pRightBtn->setSpriteFrame(GET_SPRITEFRAME(bPressed ? "right_pressed.png" : "right_normal.png"));
+		break;
+	case BTN_DOWN:
+		return m_pDownBtn->setSpriteFrame(GET_SPRITEFRAME(bPressed ? "down_pressed.png" : "down_normal.png"));
+		break;
+	}
+}
