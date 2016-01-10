@@ -53,7 +53,7 @@ void CMenuScene::InitUI()
 	//Logo
 	auto pLogo = Sprite::create("Images/logo.png");
 	Size logoSize = GET_CONTENTSIZE(pLogo);
-	pLogo->setPosition(logoSize.width * 0.5f, visibleSize.height - logoSize.height * 0.7f);
+	pLogo->setPosition(logoSize.width * 0.5f, visibleSize.height - logoSize.height * 0.6f);
 	this->addChild(pLogo);
 
 	// ÷
