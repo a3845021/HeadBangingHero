@@ -7,54 +7,54 @@
             <key>arrow_1.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{122,2},{38,38}}</string>
+                <string>{{182,2},{58,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{38,38}}</string>
+                <string>{{0,0},{58,58}}</string>
                 <key>sourceSize</key>
-                <string>{38,38}</string>
+                <string>{58,58}</string>
             </dict>
             <key>arrow_2.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{82,2},{38,38}}</string>
+                <string>{{122,2},{58,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{38,38}}</string>
+                <string>{{0,0},{58,58}}</string>
                 <key>sourceSize</key>
-                <string>{38,38}</string>
+                <string>{58,58}</string>
             </dict>
             <key>arrow_3.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{42,2},{38,38}}</string>
+                <string>{{62,2},{58,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{38,38}}</string>
+                <string>{{0,0},{58,58}}</string>
                 <key>sourceSize</key>
-                <string>{38,38}</string>
+                <string>{58,58}</string>
             </dict>
             <key>arrow_4.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{38,38}}</string>
+                <string>{{2,2},{58,58}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{38,38}}</string>
+                <string>{{0,0},{58,58}}</string>
                 <key>sourceSize</key>
-                <string>{38,38}</string>
+                <string>{58,58}</string>
             </dict>
         </dict>
         <key>metadata</key>
@@ -64,9 +64,9 @@
             <key>realTextureFileName</key>
             <string>arrow.png</string>
             <key>size</key>
-            <string>{162,42}</string>
+            <string>{242,62}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:fff14ebdab14b7f4be4a3c5799d18403$</string>
+            <string>$TexturePacker:SmartUpdate:8f45880c94f7d36e55185648b52651ec$</string>
             <key>textureFileName</key>
             <string>arrow.png</string>
         </dict>

@@ -134,7 +134,8 @@ private:
 	enum 
 	{
 		CLICK_MAX_DISTANCE = 20,
-		LINE_INTERVAL = 400,		//每200毫秒产生一组箭头
+		LINE_INTERVAL = 350,		//每350毫秒产生一组箭头
+		LINE_SPEED = 230,			//速度
 	};
 };
 

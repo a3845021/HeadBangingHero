@@ -551,7 +551,7 @@ void CGameScene::update(float dt)
 		//更新位置
 		Sprite* pArrow = *pIter;
 		float fPosY = pArrow->getPositionY();
-		fPosY -= dt * 200;
+		fPosY -= dt * LINE_SPEED;
 		pArrow->setPositionY(fPosY);
 
 		//检查边界
